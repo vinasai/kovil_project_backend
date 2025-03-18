@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const eventRoutes = require('./Routes/eventRoutes');
 const serviceRoutes = require('./Routes/serviceRoutes');
 const donateRoute =require('./Routes/donateRoute');
+const signupRoutes = require('./Routes/signupRoutes');
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/contact', require('./contactus')); // Ensure contactus.js exists
 app.use('/api/events', eventRoutes);
 app.use('/api', donateRoute);
+app.use('/api/signup', signupRoutes);
 
 // Database Connection
 mongoose.connect("mongodb://localhost:27017", { // Added database name
