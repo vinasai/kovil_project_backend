@@ -1,23 +1,65 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const Signup = require('../models/Signup');
 
 // POST route to handle form submission
 router.post('/', async (req, res) => {
   try {
-    const signupData = req.body;
+    const { firstname, lastname, dob, address, password, confirmpassword, familyMembers } = req.body;
 
-    // Optional: validate password match
-    if (signupData.password !== signupData.confirmpassword) {
+    // Validate required fields
+    if (!firstname || !lastname || !dob || !address || !password || !confirmpassword) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Validate password match
+    if (password !== confirmpassword) {
       return res.status(400).json({ error: 'Passwords do not match' });
     }
 
-    const newSignup = new Signup(signupData);
+    // Validate family members (if any)
+    if (familyMembers && familyMembers.length > 0) {
+      for (const member of familyMembers) {
+        if (!member.name || !member.dob || !member.relationship) {
+          return res.status(400).json({ error: 'All fields for family members are required' });
+        }
+      }
+    }
+
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create a new user
+    const newSignup = new Signup({
+      firstname,
+      lastname,
+      dob,
+      address,
+      password: hashedPassword, // Save hashed password
+      familyMembers,
+    });
+
+    // Save the user to the database
     await newSignup.save();
 
+    // Send success response
     res.status(201).json({ message: 'Registration saved successfully' });
   } catch (error) {
     console.error(error);
+
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ error: error.message });
+    }
+
+    // Handle duplicate key errors (e.g., unique fields)
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Handle other errors
     res.status(500).json({ error: 'Server Error' });
   }
 });
