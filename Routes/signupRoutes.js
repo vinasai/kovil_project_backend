@@ -6,16 +6,22 @@ const Signup = require('../models/Signup');
 // POST route to handle form submission
 router.post('/', async (req, res) => {
   try {
-    const { firstname, lastname, dob, address, password, confirmpassword, familyMembers } = req.body;
+    const { firstname, lastname, dob, address,email, password, confirmpassword, familyMembers } = req.body;
 
     // Validate required fields
-    if (!firstname || !lastname || !dob || !address || !password || !confirmpassword) {
+    if (!firstname || !lastname || !dob || !address ||!email || !password || !confirmpassword) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
     // Validate password match
     if (password !== confirmpassword) {
       return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    // Check if email already exists
+    const existingUser = await Signup.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already exists' });
     }
 
     // Validate family members (if any)
@@ -37,6 +43,7 @@ router.post('/', async (req, res) => {
       lastname,
       dob,
       address,
+      email,
       password: hashedPassword, // Save hashed password
       familyMembers,
     });
