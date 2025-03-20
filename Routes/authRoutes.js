@@ -4,6 +4,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Signup'); // Import your User model
 
+// Load environment variables
+require('dotenv').config();
+
+// Check if JWT_SECRET is defined
+if (!process.env.JWT_SECRET) {
+  console.error('JWT_SECRET is not defined in the environment variables.');
+  process.exit(1);
+}
+
 // Login route
 router.post('/login', async (req, res) => {
   try {
@@ -26,8 +35,12 @@ router.post('/login', async (req, res) => {
       expiresIn: '1h', // Token expires in 1 hour
     });
 
-    // Send the token and role to the client
-    res.status(200).json({ token, role: user.role });
+    // Send the token, role, and userId to the client
+    res.status(200).json({ 
+      token, 
+      role: user.role, 
+      userId: user._id 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
