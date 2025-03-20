@@ -13,6 +13,7 @@ const SignupSchema = new mongoose.Schema({
   lastname: { type: String, required: true }, // User's last name
   dob: { type: Date, required: true }, // User's date of birth
   address: { type: String, required: true }, // User's address
+  email: { type: String, required: true, unique: true }, // User's email
   password: { type: String, required: true }, // Hashed password
   familyMembers: [FamilyMemberSchema], // Array of family members
 }, { timestamps: true }); // Add timestamps for createdAt and updatedAt

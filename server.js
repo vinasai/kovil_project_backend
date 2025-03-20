@@ -7,6 +7,7 @@ const serviceRoutes = require("./Routes/serviceRoutes");
 const donateRoute = require("./Routes/donateRoute");
 const signupRoutes = require("./Routes/signupRoutes");
 const userRoutes = require('./Routes/userRoutes');
+const authRoutes = require('./Routes/authRoutes');
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api", donateRoute);
 app.use("/api/signup", signupRoutes);
 app.use('/api', userRoutes);
+app.use('/api/auth', authRoutes);
 
 // Database Connection
 mongoose
