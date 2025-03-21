@@ -13,20 +13,29 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// Delete a user by ID
-router.delete('/users/:userId', async (req, res) => {
+// Update a user's family members
+router.put('/users/:userId/family-members', async (req, res) => {
   try {
-    const userId = req.params.userId; // Get the userId from the request parameters
+    const userId = req.params.userId;
+    const { familyMembers } = req.body; // Expect an array of family members
 
-    // Check if the user exists
-    const user = await User.findById(userId);
+    // Validate family members
+    if (!Array.isArray(familyMembers)) {
+      return res.status(400).json({ error: 'Family members must be an array' });
+    }
+
+    // Find the user and update their family members
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { familyMembers },
+      { new: true } // Return the updated user
+    );
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Delete the user
-    await User.findByIdAndDelete(userId); // Delete the user from MongoDB
-    res.status(200).json({ message: 'User deleted successfully' }); // Send a success response
+    res.status(200).json(user); // Return the updated user
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server Error' });
