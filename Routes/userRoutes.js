@@ -13,6 +13,26 @@ router.get('/users', async (req, res) => {
   }
 });
 
+// DELETE route to delete a user by ID
+router.delete('/users/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
 // Update a user's family members
 router.put('/users/:userId/family-members', async (req, res) => {
   try {
