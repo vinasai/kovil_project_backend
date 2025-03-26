@@ -31,7 +31,7 @@ app.use('/api/auth', authRoutes);
 
 // Database Connection
 mongoose
-  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/mern-db", {
+  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

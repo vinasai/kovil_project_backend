@@ -44,6 +44,17 @@ router.delete('/delete/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete event' });
     }
 });
+// Get all upcoming events
+router.get('/upcoming-events', async (req, res) => {
+    try {
+      const today = new Date().toISOString().split('T')[0]; // Today's date
+      const events = await Event.find({ date: { $gte: today } }).sort({ date: 1 });
+      res.json(events);
+    } catch (err) {
+      console.error('Error fetching events:', err);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
 
 module.exports = router;
 
